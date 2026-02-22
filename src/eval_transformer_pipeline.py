@@ -3,6 +3,7 @@
 import torch
 import evaluate
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+import random
 
 rouge = evaluate.load("rouge")
 
@@ -82,8 +83,12 @@ def show_example_models(generator, tokenizer,
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     count = 0
-
-    for text in test_df["text"]:
+    sampled_texts = random.sample(
+        test_df["text"].tolist(),
+        k=min(num_examples * 3, len(test_df))  # запас на короткие тексты
+    )
+    
+    for text in sampled_texts:
 
         if count >= num_examples:
             break
